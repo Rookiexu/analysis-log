@@ -22,7 +22,21 @@ public class AnalsisLogService {
     }
 
     @Test
-    public void testLog() throws InterruptedException {
-        testService.testTime();
+    public void testRunTimeLog() throws InterruptedException {
+        testService.testRunTimeLog();
+    }
+
+    @Test
+    public void testExRunTimeLog() throws Exception {
+        testService.testExRunTimeLog();
+    }
+    @Test
+    public void testExLog() throws Exception {
+        testService.testExLog();
+    }
+
+    @Test
+    public void testExLogWithoutEx() throws InterruptedException {
+        testService.testExLogWithoutEx();
     }
 }

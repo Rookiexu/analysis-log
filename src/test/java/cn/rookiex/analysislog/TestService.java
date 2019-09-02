@@ -13,12 +13,27 @@ import org.springframework.stereotype.Component;
 public class TestService {
 
     @AnalysisLog
-    public void testTime() throws InterruptedException {
+    public void testRunTimeLog() throws InterruptedException {
         Thread.sleep(5 * 1000);
     }
 
-    @AnalysisLog(logType = LogEnum.SYSTEM_EX_LOG)
-    public void testTime2() throws InterruptedException {
+    @AnalysisLog()
+    public void testExRunTimeLog() throws Exception {
         Thread.sleep(5 * 1000);
+
+        throw new Exception();
+    }
+
+    @AnalysisLog(logType = LogEnum.SYSTEM_EX_LOG)
+    public void testExLog() throws Exception {
+        Thread.sleep(5 * 1000);
+
+        throw new Exception();
+    }
+
+    @AnalysisLog(logType = LogEnum.SYSTEM_EX_LOG)//只打印出现异常时的日志
+    public void testExLogWithoutEx() throws InterruptedException {
+        Thread.sleep(5 * 1000);
+
     }
 }

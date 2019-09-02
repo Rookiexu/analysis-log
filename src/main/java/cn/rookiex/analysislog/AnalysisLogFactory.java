@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
  * @Describe :
  */
 public class AnalysisLogFactory {
-    public static final String LOG_NAME_PREFIX = "AnalysisLog.";
+    public static final String LOG_NAME_PREFIX = "AnalysisLog";
     public static final String LOG_NAME_SEPARATOR = ".";
 
     public static AnalysisLog getAnalysisLogger(Class clazz) {

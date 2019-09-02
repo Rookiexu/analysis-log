@@ -53,7 +53,7 @@ public class LogAspectHandler {
             String logName = getLogName(joinPoint, AnalysisLog.logType());
             analysisLogger = AnalysisLogFactory.getAnalysisLogger(logName);
             long overTime = System.currentTimeMillis();
-            long cost = startTime - overTime;
+            long cost = overTime - startTime;
             if (cost > analysisLogConfig.getLongTime())
                 logRunTimeInfo(analysisLogger, logName, cost);
         }
@@ -79,7 +79,7 @@ public class LogAspectHandler {
         Map<String, Object> map = new LinkedHashMap<>();
         map.put("logType", LogEnum.SYSTEM_EX_LOG.getValue());
         map.put("method", logName);
-        map.put("exMsg", exMsg.toString());
+        map.put("exMsg", exMsg);
         analysisLogger.info(JSON.toJSONString(map));
     }
 }
