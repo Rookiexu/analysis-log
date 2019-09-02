@@ -37,18 +37,18 @@ public class LogAspectHandler {
         }
         long overTime = System.currentTimeMillis();
         long cost = startTime - overTime;
-        AnalysisLog analysisLogger = AnalysisLogFactory.getAnalysisLogger(runTimeLog.logName());
-        analysisLogger.info(runTimeLog.logType(),cost);
+        String logName = getLogName(joinPoint, runTimeLog);
+        AnalysisLog analysisLogger = AnalysisLogFactory.getAnalysisLogger(logName);
+        analysisLogger.info(logName + "  cost ==> " + cost);
+
+
         return proceed;
     }
 
-    private void getLogName(ProceedingJoinPoint joinPoint,runTimeLog runTimeLog){
-        MethodSignature signature = (MethodSignature)joinPoint.getSignature();
+    private String getLogName(ProceedingJoinPoint joinPoint, runTimeLog runTimeLog) {
+        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         String logTypeValue = runTimeLog.logType().getValue();
-        Method method = signature.getMethod();
-        String name = method.getName();
-
-//        String logName = LOG_NAME_PREFIX + LOG_NAME_SEPARATOR + getName(logTypeValue, signature);
-
+        String annotationName = String.format("%s.%s", signature.getDeclaringTypeName(), signature.getMethod().getName());
+        return logTypeValue + LOG_NAME_SEPARATOR + annotationName;
     }
 }
