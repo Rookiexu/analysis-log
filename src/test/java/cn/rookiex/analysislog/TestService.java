@@ -1,6 +1,7 @@
 package cn.rookiex.analysislog;
 
-import cn.rookiex.analysislog.annotation.runTimeLog;
+import cn.rookiex.analysislog.annotation.AnalysisLog;
+import cn.rookiex.analysislog.enums.LogEnum;
 import org.springframework.stereotype.Component;
 
 /**
@@ -11,8 +12,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class TestService {
 
-    @runTimeLog
+    @AnalysisLog
     public void testTime() throws InterruptedException {
+        Thread.sleep(5 * 1000);
+    }
+
+    @AnalysisLog(logType = LogEnum.SYSTEM_EX_LOG)
+    public void testTime2() throws InterruptedException {
         Thread.sleep(5 * 1000);
     }
 }
