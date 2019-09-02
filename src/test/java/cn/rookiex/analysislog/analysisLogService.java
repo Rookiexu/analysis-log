@@ -13,7 +13,7 @@ import org.springframework.test.context.junit4.SpringRunner;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = AnalysisLogApplicationTests.class)
-public class AnalsisLogService {
+public class analysisLogService {
     private TestService testService;
 
     @Autowired

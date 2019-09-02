@@ -1,7 +1,8 @@
 package cn.rookiex.analysislog.aop;
 
+import cn.rookiex.analysislog.AnalysisLog;
 import cn.rookiex.analysislog.AnalysisLogFactory;
-import cn.rookiex.analysislog.annotation.AnalysisLog;
+import cn.rookiex.analysislog.annotation.analysisLog;
 import cn.rookiex.analysislog.data.AnalysisLogConfig;
 import cn.rookiex.analysislog.enums.LogEnum;
 import com.alibaba.fastjson.JSON;
@@ -35,8 +36,8 @@ public class LogAspectHandler {
         this.analysisLogConfig = analysisLogConfig;
     }
 
-    @Around(value = "@annotation(AnalysisLog)")
-    public Object before(ProceedingJoinPoint joinPoint, AnalysisLog AnalysisLog) {
+    @Around(value = "@annotation(analysisLog)")
+    public Object before(ProceedingJoinPoint joinPoint, analysisLog analysisLog) {
         cn.rookiex.analysislog.AnalysisLog analysisLogger;
         long startTime = System.currentTimeMillis();
         Object proceed = null;
@@ -49,8 +50,14 @@ public class LogAspectHandler {
             throwable.printStackTrace();
         }
 
-        if (AnalysisLog.logType().equals(LogEnum.RUN_LONG_TIME)) {
-            String logName = getLogName(joinPoint, AnalysisLog.logType());
+        if (analysisLog.logType().equals(LogEnum.COUNT_LOG)) {
+            String logName = getLogName(joinPoint, analysisLog.logType());
+            analysisLogger = AnalysisLogFactory.getAnalysisLogger(logName);
+            long overTime = System.currentTimeMillis();
+            long cost = overTime - startTime;
+            logCountCalls(analysisLogger, logName, cost);
+        } else if (analysisLog.logType().equals(LogEnum.RUN_LONG_TIME)) {
+            String logName = getLogName(joinPoint, analysisLog.logType());
             analysisLogger = AnalysisLogFactory.getAnalysisLogger(logName);
             long overTime = System.currentTimeMillis();
             long cost = overTime - startTime;
@@ -67,7 +74,7 @@ public class LogAspectHandler {
         return logTypeValue + LOG_NAME_SEPARATOR + annotationName;
     }
 
-    private void logRunTimeInfo(cn.rookiex.analysislog.AnalysisLog analysisLogger, String logName, long cost) {
+    private void logRunTimeInfo(AnalysisLog analysisLogger, String logName, long cost) {
         Map<String, Object> map = new LinkedHashMap<>();
         map.put("logType", LogEnum.RUN_LONG_TIME.getValue());
         map.put("method", logName);
@@ -75,11 +82,20 @@ public class LogAspectHandler {
         analysisLogger.info(JSON.toJSONString(map));
     }
 
-    private void logSystemExInfo(cn.rookiex.analysislog.AnalysisLog analysisLogger, String logName, Throwable exMsg) {
+    private void logSystemExInfo(AnalysisLog analysisLogger, String logName, Throwable exMsg) {
         Map<String, Object> map = new LinkedHashMap<>();
         map.put("logType", LogEnum.SYSTEM_EX_LOG.getValue());
         map.put("method", logName);
         map.put("exMsg", exMsg);
+        analysisLogger.info(JSON.toJSONString(map));
+    }
+
+    private void logCountCalls(AnalysisLog analysisLogger, String logName, long cost) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("logType", LogEnum.COUNT_LOG.getValue());
+        map.put("method", logName);
+        map.put("costTime", cost);
+        map.put("count", 1);
         analysisLogger.info(JSON.toJSONString(map));
     }
 }
