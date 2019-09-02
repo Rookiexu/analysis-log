@@ -1,10 +1,10 @@
-package cn.rookiex.analysislog.aop;
+package cn.rookiex.analysisLog.aop;
 
-import cn.rookiex.analysislog.AnalysisLog;
-import cn.rookiex.analysislog.AnalysisLogFactory;
-import cn.rookiex.analysislog.annotation.analysisLog;
-import cn.rookiex.analysislog.data.AnalysisLogConfig;
-import cn.rookiex.analysislog.enums.LogEnum;
+import cn.rookiex.analysisLog.AnalysisLog;
+import cn.rookiex.analysisLog.AnalysisLogFactory;
+import cn.rookiex.analysisLog.annotation.analysisLog;
+import cn.rookiex.analysisLog.data.AnalysisLogConfig;
+import cn.rookiex.analysisLog.enums.LogEnum;
 import com.alibaba.fastjson.JSON;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static cn.rookiex.analysislog.AnalysisLogFactory.LOG_NAME_SEPARATOR;
+import static cn.rookiex.analysisLog.AnalysisLogFactory.LOG_NAME_SEPARATOR;
 
 /**
  * @Author : Rookiex
@@ -38,33 +38,44 @@ public class LogAspectHandler {
 
     @Around(value = "@annotation(analysisLog)")
     public Object before(ProceedingJoinPoint joinPoint, analysisLog analysisLog) {
-        cn.rookiex.analysislog.AnalysisLog analysisLogger;
         long startTime = System.currentTimeMillis();
         Object proceed = null;
         try {
             proceed = joinPoint.proceed();
         } catch (Throwable throwable) {
-            String exLogName = getLogName(joinPoint, LogEnum.SYSTEM_EX_LOG);
-            analysisLogger = AnalysisLogFactory.getAnalysisLogger(exLogName);
-            logSystemExInfo(analysisLogger, exLogName, throwable);
+            logSystemExInfo(joinPoint, throwable);
             throwable.printStackTrace();
         }
 
         if (analysisLog.logType().equals(LogEnum.COUNT_LOG)) {
-            String logName = getLogName(joinPoint, analysisLog.logType());
-            analysisLogger = AnalysisLogFactory.getAnalysisLogger(logName);
-            long overTime = System.currentTimeMillis();
-            long cost = overTime - startTime;
-            logCountCalls(analysisLogger, logName, cost);
+            logCountCalls(joinPoint, startTime, analysisLog.logType());
         } else if (analysisLog.logType().equals(LogEnum.RUN_LONG_TIME)) {
-            String logName = getLogName(joinPoint, analysisLog.logType());
-            analysisLogger = AnalysisLogFactory.getAnalysisLogger(logName);
-            long overTime = System.currentTimeMillis();
-            long cost = overTime - startTime;
-            if (cost > analysisLogConfig.getLongTime())
-                logRunTimeInfo(analysisLogger, logName, cost);
+            logRunTimeInfo(joinPoint, startTime, analysisLog.logType());
         }
         return proceed;
+    }
+
+    private void logSystemExInfo(ProceedingJoinPoint joinPoint, Throwable throwable) {
+        String exLogName = getLogName(joinPoint, LogEnum.SYSTEM_EX_LOG);
+        AnalysisLog analysisLogger = AnalysisLogFactory.getAnalysisLogger(exLogName);
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("logType", LogEnum.SYSTEM_EX_LOG.getValue());
+        map.put("method", exLogName);
+        map.put("exMsg", throwable);
+        analysisLogger.info(JSON.toJSONString(map));
+    }
+
+    private void logCountCalls(ProceedingJoinPoint joinPoint, long startTime, LogEnum logEnum) {
+        String logName = getLogName(joinPoint, logEnum);
+        AnalysisLog analysisLogger = AnalysisLogFactory.getAnalysisLogger(logName);
+        long overTime = System.currentTimeMillis();
+        long cost = overTime - startTime;
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("logType", LogEnum.COUNT_LOG.getValue());
+        map.put("method", logName);
+        map.put("costTime", cost);
+        map.put("count", 1);
+        analysisLogger.info(JSON.toJSONString(map));
     }
 
     private String getLogName(ProceedingJoinPoint joinPoint, LogEnum runTimeLog) {
@@ -74,28 +85,22 @@ public class LogAspectHandler {
         return logTypeValue + LOG_NAME_SEPARATOR + annotationName;
     }
 
-    private void logRunTimeInfo(AnalysisLog analysisLogger, String logName, long cost) {
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("logType", LogEnum.RUN_LONG_TIME.getValue());
-        map.put("method", logName);
-        map.put("costTime", cost);
-        analysisLogger.info(JSON.toJSONString(map));
+    private void logRunTimeInfo(ProceedingJoinPoint joinPoint, long startTime, LogEnum logEnum) {
+        String logName = getLogName(joinPoint, logEnum);
+        AnalysisLog analysisLogger = AnalysisLogFactory.getAnalysisLogger(logName);
+        long overTime = System.currentTimeMillis();
+        long cost = overTime - startTime;
+        if (cost > analysisLogConfig.getLongTime()) {
+            Map<String, Object> map = new LinkedHashMap<>();
+            map.put("logType", LogEnum.RUN_LONG_TIME.getValue());
+            map.put("method", logName);
+            map.put("costTime", cost);
+            analysisLogger.info(JSON.toJSONString(map));
+        }
     }
 
     private void logSystemExInfo(AnalysisLog analysisLogger, String logName, Throwable exMsg) {
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("logType", LogEnum.SYSTEM_EX_LOG.getValue());
-        map.put("method", logName);
-        map.put("exMsg", exMsg);
-        analysisLogger.info(JSON.toJSONString(map));
+
     }
 
-    private void logCountCalls(AnalysisLog analysisLogger, String logName, long cost) {
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("logType", LogEnum.COUNT_LOG.getValue());
-        map.put("method", logName);
-        map.put("costTime", cost);
-        map.put("count", 1);
-        analysisLogger.info(JSON.toJSONString(map));
-    }
 }
