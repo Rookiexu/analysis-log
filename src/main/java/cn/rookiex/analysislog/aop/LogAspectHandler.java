@@ -39,25 +39,28 @@ public class LogAspectHandler {
 
     @Around(value = "@annotation(runTimeLog)")
     public Object before(ProceedingJoinPoint joinPoint, runTimeLog runTimeLog) {
+        String logName = getLogName(joinPoint, runTimeLog.logType());
+        AnalysisLog analysisLogger = AnalysisLogFactory.getAnalysisLogger(logName);
+
         long startTime = System.currentTimeMillis();
         Object proceed = null;
         try {
             proceed = joinPoint.proceed();
         } catch (Throwable throwable) {
+            String exlogName = getLogName(joinPoint,LogEnum.SYSTEM_EX_LOG );
+            systemExAnalysisLog(analysisLogger, exlogName, throwable);
             throwable.printStackTrace();
         }
         long overTime = System.currentTimeMillis();
         long cost = startTime - overTime;
-        String logName = getLogName(joinPoint, runTimeLog);
-        AnalysisLog analysisLogger = AnalysisLogFactory.getAnalysisLogger(logName);
         if (cost > analysisLogConfig.getLongTime())
             logRunTimeInfo(analysisLogger, logName, cost);
         return proceed;
     }
 
-    private String getLogName(ProceedingJoinPoint joinPoint, runTimeLog runTimeLog) {
+    private String getLogName(ProceedingJoinPoint joinPoint, LogEnum runTimeLog) {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
-        String logTypeValue = runTimeLog.logType().getValue();
+        String logTypeValue = runTimeLog.getValue();
         String annotationName = String.format("%s.%s", signature.getDeclaringTypeName(), signature.getMethod().getName());
         return logTypeValue + LOG_NAME_SEPARATOR + annotationName;
     }
@@ -67,6 +70,15 @@ public class LogAspectHandler {
         map.put("logType", LogEnum.RUN_LONG_TIME.getValue());
         map.put("method", logName);
         map.put("costTime", cost);
+        analysisLogger.info(JSON.toJSONString(map));
+    }
+
+    private void systemExAnalysisLog(AnalysisLog analysisLogger, String logName, Throwable exMsg) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("logType", LogEnum.SYSTEM_EX_LOG.getValue());
+        map.put("method", logName);
+        map.put("exMsg", exMsg.toString());
+        JSON.toJSONString(map);
         analysisLogger.info(JSON.toJSONString(map));
     }
 }
