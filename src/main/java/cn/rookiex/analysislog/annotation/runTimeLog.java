@@ -1,6 +1,6 @@
 package cn.rookiex.analysislog.annotation;
 
-import cn.rookiex.analysislog.enums.LogType;
+import cn.rookiex.analysislog.enums.LogEnum;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -19,7 +19,7 @@ public @interface runTimeLog {
      * 日志类型
      * @return logType
      */
-    LogType logType() default LogType.RunTime;
+    LogEnum logType() default LogEnum.RUN_LONG_TIME;
 
     /**
      * 日志记录的方法

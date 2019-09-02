@@ -1,6 +1,6 @@
 package cn.rookiex.analysislog;
 
-import cn.rookiex.analysislog.enums.LogType;
+import cn.rookiex.analysislog.enums.LogEnum;
 import org.apache.log4j.Logger;
 
 /**
@@ -23,7 +23,7 @@ public class AnalysisLog {
         logger.info(checkAddString(message), t);
     }
 
-    public void info(LogType logType, Object message) {
+    public void info(LogEnum logEnum, Object message) {
         logger.info(checkAddString(message));
     }
 
