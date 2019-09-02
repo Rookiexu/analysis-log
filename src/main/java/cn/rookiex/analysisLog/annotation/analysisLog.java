@@ -1,6 +1,6 @@
-package cn.rookiex.analysislog.annotation;
+package cn.rookiex.analysisLog.annotation;
 
-import cn.rookiex.analysislog.enums.LogEnum;
+import cn.rookiex.analysisLog.enums.LogEnum;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

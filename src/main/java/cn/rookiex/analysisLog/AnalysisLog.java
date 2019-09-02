@@ -1,6 +1,6 @@
-package cn.rookiex.analysislog;
+package cn.rookiex.analysisLog;
 
-import cn.rookiex.analysislog.enums.LogEnum;
+import cn.rookiex.analysisLog.enums.LogEnum;
 import org.apache.log4j.Logger;
 
 /**

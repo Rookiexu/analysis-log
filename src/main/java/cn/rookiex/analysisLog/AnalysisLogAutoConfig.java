@@ -1,7 +1,7 @@
-package cn.rookiex.analysislog;
+package cn.rookiex.analysisLog;
 
-import cn.rookiex.analysislog.aop.LogAspectHandler;
-import cn.rookiex.analysislog.data.AnalysisLogConfig;
+import cn.rookiex.analysisLog.aop.LogAspectHandler;
+import cn.rookiex.analysisLog.data.AnalysisLogConfig;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;

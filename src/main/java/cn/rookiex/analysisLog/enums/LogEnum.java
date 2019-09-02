@@ -1,4 +1,4 @@
-package cn.rookiex.analysislog.enums;
+package cn.rookiex.analysisLog.enums;
 
 /**
  * @Author : Rookiex
