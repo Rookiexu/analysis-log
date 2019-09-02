@@ -20,20 +20,22 @@ public class TestService {
     @analysisLog()
     public void testExRunTimeLog() throws Exception {
         Thread.sleep(5 * 1000);
-
         throw new Exception();
     }
 
     @analysisLog(logType = LogEnum.SYSTEM_EX_LOG)
     public void testExLog() throws Exception {
         Thread.sleep(5 * 1000);
-
         throw new Exception();
     }
 
     @analysisLog(logType = LogEnum.SYSTEM_EX_LOG)//只打印出现异常时的日志
     public void testExLogWithoutEx() throws InterruptedException {
         Thread.sleep(5 * 1000);
+    }
 
+    @analysisLog(logType = LogEnum.COUNT_LOG)//调用一次打印一次记录
+    public void testCountLog() {
+        //do nothing
     }
 }

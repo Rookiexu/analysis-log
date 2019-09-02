@@ -39,4 +39,9 @@ public class analysisLogService {
     public void testExLogWithoutEx() throws InterruptedException {
         testService.testExLogWithoutEx();
     }
+
+    @Test
+    public void testCountLog() throws InterruptedException {
+        testService.testCountLog();
+    }
 }
