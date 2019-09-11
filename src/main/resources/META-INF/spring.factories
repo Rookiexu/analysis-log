@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-cn.rookiex.analysisLog.AnalysisLogAutoConfig
+cn.rookiex.log.AnalysisLogAutoConfig
